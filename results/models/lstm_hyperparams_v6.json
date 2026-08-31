@@ -1,0 +1,18 @@
+{
+    "TEST_ID": "v6",
+    "TIME_STEPS": 2,
+    "LSTM_UNITS": 32,
+    "NUM_LAYERS": 3,
+    "DROPOUT_RATE": 0.2,
+    "LEARNING_RATE": 0.002,
+    "WEIGHT_DECAY": 0.0001,
+    "EPOCHS": 200,
+    "BATCH_SIZE": 8,
+    "PATIENCE": 20,
+    "METRICS": {
+        "Train_R2": 0.7618,
+        "Test_R2": 0.1905,
+        "Train_MAE": 0.0239,
+        "Test_MAE": 0.0173
+    }
+}

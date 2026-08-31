@@ -1,0 +1,248 @@
+### **Temat Pracy Magisterskiej**
+
+**Tytuł:** **„Wielokryterialna analiza porównawcza architektur uczenia maszynowego w zadaniu prognozowania deformacji terenu wywołanych pracą maszyny drążącej TBM.”**
+
+### **Dlaczego ten temat jest "kuloodporny"?**
+
+1. **Dla WIMiR (Twoja "obrona"):** Używasz terminu **"interakcja maszyna-górotwór"**. To klasyczne zagadnienie mechaniki. Twoja praca polega na znalezieniu cyfrowej reprezentacji (modelu ML) tej fizycznej interakcji. To czysta **Informatyka w Inżynierii Mechanicznej**.
+2. **Dla PAN (Promotor):** Wynikiem jest model, który mówi: "Jak zmienisz parametry TBM, to tak zmieni się teren". To jest esencja sterowania procesem drążenia.
+3. **Metodologia ("Large Study"):** Słowo "Wielokryterialna analiza porównawcza" uzasadnia przetestowanie kilkudziesięciu modeli, a nie tylko jednego.
+
+---
+
+### **Plan Pracy (Scope) – Co dokładnie zrobisz?**
+
+Możesz pokazać ten plan promotorowi. Jest on zgodny z **Tematem 2** z Twojego pliku PDF (podejście analityczno-porównawcze).
+
+### **1. Cel Pracy**
+
+Celem jest zbadanie, która rodzina algorytmów (drzewiaste vs rekurencyjne vs transformery) najskuteczniej modeluje nieliniową zależność między sterowaniem maszyną (TBM) a reakcją otoczenia, przy uwzględnieniu heterogeniczności danych (szybki TBM vs wolny InSAR).
+
+### **2. Architektura Systemu (Informatyka)**
+
+To jest Twój wkład inżynierski (zgodnie z ):
+
+- **Warstwa danych (SQL):** Projekt i implementacja relacyjnej bazy danych (PostgreSQL/TimescaleDB) integrującej:
+    - Szeregi czasowe z TBM (100k+ rekordów: moment obrotowy, siła docisku, prędkość penetracji).
+    - Szeregi przestrzenno-czasowe z InSAR (przemieszczenia gruntu).
+    - Dane z czujników punktowych (inklinometry/piezometry).
+- **Warstwa ETL:** Skrypty Pythonowe do synchronizacji czasowej (resampling, interpolacja) i fuzji danych.
+
+### **3. Core Badawczy ("Wielkie Badanie Modeli")**
+
+Przeprowadzenie benchmarku na 3 poziomach złożoności (zgodnie z ):
+
+- **Poziom 1: Modele Interpretowalne (White/Grey Box)**
+    - Cel: Zrozumienie fizyki zjawiska (Feature Importance).
+    - Algorytmy: **XGBoost, LightGBM, CatBoost**.
+    - *Pytanie badawcze:* Które parametry maszyny (np. ciśnienie w komorze roboczej) mają największy wpływ na osiadanie terenu?
+- **Poziom 2: Modele Sekwencyjne (Black Box / Deep Learning)**
+    - Cel: Uchwycenie dynamiki i opóźnień czasowych (bezwładność górotworu).
+    - Algorytmy: **LSTM** (Long Short-Term Memory), **GRU**, **Bi-LSTM**.
+    - *Pytanie badawcze:* Czy sieci rekurencyjne lepiej radzą sobie z "pamięcią" górotworu niż modele statyczne?
+- **Poziom 3: Architektury State-of-the-Art (Opcjonalnie)**
+    - Algorytmy: **Temporal Fusion Transformer (TFT)** lub **TCN** (Temporal Convolutional Networks).
+    - *Pytanie badawcze:* Czy mechanizmy atencji (Attention Mechanisms) poprawiają predykcję w długim horyzoncie czasowym?
+
+![image.png](attachment:d67bc6fb-8419-4c43-9dd2-41bb0d345d7f:image.png)
+
+### **4. Metodologia Oceny (Walidacja)**
+
+Porównanie nie tylko na podstawie błędu (RMSE/MAE), ale także:
+
+- **Stabilności treningu:** (czy model za każdym razem uczy się tak samo?).
+- **Złożoności obliczeniowej:** Czas treningu vs zysk na dokładności (Analiza Pareto).
+- **Zdolności generalizacji:** Testy na wydzielonym fragmencie trasy tunelu, którego model "nie widział".
+
+### **Jak to wytłumaczyć promotorowi w 3 zdaniach?**
+
+„Panie Profesorze, zamiast budować jeden model, chcę stworzyć **platformę benchmarkową**, która na naszych danych z TBM przetestuje automatycznie wiodące architektury AI (od drzew decyzyjnych po sieci głębokie).
+
+Celem jest znalezienie odpowiedzi, który algorytm najlepiej **identyfikuje fizyczną relację** między parametrami pracy tarczy a osiadaniem, co pozwoli nam nie tylko przewidywać deformacje, ale też zrozumieć, jak sterowanie maszyną na nie wpływa.
+
+Całość oprę o profesjonalną bazę SQL i środowisko Python, co spełnia wymagania mojej specjalizacji informatycznej.”
+
+---
+
+### **Etap 2: "Core" Pracy – Wielkoskalowe Porównanie Modeli**
+
+Zamiast testować "model A vs model B", przetestuj rodziny modeli. Podziel badanie na klasy:
+
+Baseline (Punkty odniesienia):
+
+Metody naiwne (Persistence model - "jutro będzie tak jak dzisiaj").
+
+Klasyczna statystyka: ARIMA / SARIMA.
+
+Machine Learning (Drzewiaste):
+
+Te modele często wygrywają na danych tabelarycznych.
+
+Testuj: Random Forest, XGBoost, LightGBM, CatBoost.
+
+*Badanie:* Jak radzą sobie z inżynierią cech (feature engineering)?
+
+Deep Learning (Sekwencyjne - RNN):
+
+Tu wchodzisz w to, co sugeruje plik: LSTM, GRU, Bi-LSTM.
+
+Plik wspomina, że LSTM "jest przystosowany do uchwycenia długoterminowych zależności", ale Ty możesz sprawdzić, czy GRU nie jest szybsze i wystarczająco dokładne dla TBM.
+
+State-of-the-Art (Nowoczesne architektury - opcja na "5.0"):
+
+TCN (Temporal Convolutional Networks): Często lepsze niż LSTM w inżynierii mechanicznej.
+
+Transformery (Time-Series Transformers): np. Temporal Fusion Transformer (TFT) lub Informer. To pokaże komisji, że śledzisz najnowsze trendy AI.
+
+### **Etap 3: Metodologia Badania (To co czyni pracę naukową)**
+
+Nie rób tego ręcznie. Napisz skrypt wykorzystujący bibliotekę do optymalizacji (np. Optuna lub Ray Tune).
+
+Automatyczny Tuning: Każdy model powinien przejść przez np. 50 prób doboru hiperparametrów. To da Ci wynik: "Przetestowano łącznie 400 konfiguracji modeli". To brzmi imponująco.
+
+Walidacja: Zastosuj Walk-forward validation (nie zwykłe cross-validation, bo masz szereg czasowy).
+
+Metryki Inżynierskie: Oprócz MSE/RMSE, mierz:
+
+Czas treningu (koszt obliczeniowy).
+
+Czas inferencji (czy model zdążyłby zadziałać na sterowniku TBM w czasie rzeczywistym?).
+
+Zużycie pamięci (aspekt implementacyjny ważny na WIMiR ).
+
+---
+
+### **Dlaczego "wielokryterialna" jest bezpieczna (i wręcz zalecana)?**
+
+Jako informatyk na WIMiR nie oceniasz modelu tylko po tym, czy dobrze przewiduje (np. błąd RMSE). Oceniasz go jako **inżynier oprogramowania/systemów**. Twoimi kryteriami są:
+
+1. **Dokładność:** (RMSE, MAE, $R^2$)1.
+2. **Złożoność obliczeniowa:** Czas treningu (ile minut się uczy?) i czas inferencji (ile milisekund zajmuje predykcja?)2.
+3. **Stabilność:** Czy jak puścisz model 10 razy, to daje ten sam wynik?3.
+4. **Zasoby:** Zużycie pamięci RAM/VRAM (ważne przy dużych danych InSAR)4.
+
+### **Alternatywa: Jeśli nadal wolisz "bezpieczniejszy" tytuł**
+
+Jeśli wolisz nie ryzykować dyskusji o definicjach, zamień słowo "Wielokryterialna" na **"Kompleksowa"** lub **"Ewaluacja efektywności"**. Brzmią równie profesjonalnie, a dają większą swobodę.
+
+### **Jakie kryteria "obronią" tytuł "Wielokryterialna"?**
+
+Jako student **Informatyki w Inżynierii Mechanicznej**, powinieneś ocenić modele pod kątem tych 3 filarów (to będzie Twoja "wielokryterialność"):
+
+1. **Jakość predykcji (Skuteczność):**
+    - Standardowe błędy: RMSE (Root Mean Square Error), MAE, $R^2$.
+    - *Co to mówi:* Czy model dobrze przewiduje, ile milimetrów osiądzie grunt?
+    - Jest to sugerowane wprost w Twoim pliku źródłowym: "zastosowanie obiektywnych metryk oceny... średni błąd bezwzględny (MAE), błąd RMS, współczynnik determinacji"1.
+2. **Koszt obliczeniowy (Wydajność):**
+    - **Czas treningu:** Czy model uczył się 5 minut (XGBoost) czy 5 godzin (LSTM)?
+    - **Czas inferencji (odpowiedzi):** Jak szybko model zwraca wynik dla nowej próbki? W systemach sterowania maszynami to kluczowe.
+    - Twój plik źródłowy podkreśla, że warto opisać "złożoność obliczeniową zastosowanych algorytmów czy czas treningu modeli"2.
+3. **Złożoność i stabilność (Inżynieria):**
+    - **Zużycie pamięci (RAM/VRAM):** Ważne, jeśli system miałby działać na komputerze przemysłowym na budowie.
+    - **Rozmiar modelu na dysku:** Czy plik modelu waży 5 MB czy 500 MB?
+    - **Stabilność:** Czy jak puścisz uczenie 10 razy, to wyniki są powtarzalne? (To również sugeruje Twój materiał: "uruchomienie treningu kilka razy z różnymi inicjalizacjami sieci, aby zobaczyć rozrzut wyników" 3).
+
+---
+
+# 🧠 Plan Realizacji Projektu ML – Praca Magisterska
+
+## 1. Środowisko Pracy (IDE i Hardware)
+
+### Wybór IDE: **Visual Studio Code (VS Code)**
+
+Zdecydowaliśmy się na VS Code zamiast PyCharm/Spyder.
+
+- **Dlaczego:**
+    - **Standard rynkowy:** Najlepsze przygotowanie do pracy zawodowej.
+    - **Hybrydowość:** Idealna obsługa zarówno notatników `.ipynb` (eksperymenty), jak i skryptów `.py` (wdrażanie).
+    - **Wydajność:** Stabilniejszy niż Spyder przy dużym obciążeniu (nie "mrozi" interfejsu).
+    - **Darmowość:** Pełna funkcjonalność bez licencji studenckich/firmowych.
+
+### Sprzęt: **NVIDIA RTX 4090**
+
+- **Status:** Masz potężną kartę lokalnie, nie korzystasz z chmury (Colab/Azure).
+- **Wymóg techniczny:** Konieczna instalacja **CUDA Toolkit** oraz odpowiedniej wersji **PyTorch/TensorFlow** (wersja GPU), aby Python nie liczył modeli na procesorze.
+
+---
+
+## 2. Strategia Zarządzania Danymi (Data Pipeline)
+
+Odrzucamy koncepcję łączenia się z SQL przy każdym treningu modelu. Stosujemy podział na **ETL** i **ML**.
+
+### Etap A: Przygotowanie Danych (Data Engineering)
+
+- **Źródło:** Baza SQL (dane historyczne, ok. 80-100k rekordów).
+- **Akcja:** Uruchamiasz **jeden raz** skrypt pobierający.
+- **Format zapisu:** Plik **`.parquet`** (zamiast CSV).
+    - *Zalety:* Zachowuje typy danych (int, float, date), zajmuje mniej miejsca, wczytuje się błyskawicznie.
+- **Cel dyplomowy:** Ten etap służy wykazaniu umiejętności integracji systemowej i znajomości SQL.
+
+### Etap B: Trenowanie Modeli (Machine Learning)
+
+- **Źródło:** Plik lokalny `.parquet`.
+- **Akcja:** Każdy z 10 modeli wczytuje ten sam plik.
+- **Zysk:** Szybkość iteracji (brak narzutu sieciowego bazy) i powtarzalność wyników (zamrożony zbiór danych).
+
+---
+
+## 3. Struktura Projektu (Drzewo plików)
+
+Zamiast osobnych folderów dla każdego modelu, stosujemy jeden projekt ze wspólnym "silnikiem".
+
+Plaintext
+
+`Magisterka_ML/
+│
+├── data/
+│   ├── raw/               # Tu ląduje zrzut z SQL (plik .parquet)
+│   └── processed/         # Ewentualne dane po normalizacji
+│
+├── scripts/               # Skrypty jednorazowe (ETL)
+│   └── 01_sql_to_parquet.py
+│
+├── src/                   # Wspólne moduły (Ważne dla porównywalności!)
+│   ├── __init__.py
+│   ├── evaluation.py      # Funkcja licząca błędy (MSE, Accuracy) i czas
+│   └── visualization.py   # Funkcja generująca identyczne wykresy
+│
+├── notebooks/             # Miejsce pracy nad modelami (1 plik = 1 model)
+│   ├── 01_LinearRegression.ipynb
+│   ├── ...
+│   ├── 05_NeuralNetwork.ipynb
+│   └── 99_Comparison_Report.ipynb
+│
+└── results/               
+    ├── models/            # Zapisane wagi modeli (.pth, .pkl)
+    └── metrics.csv        # Tabela zbiorcza wyników`
+
+---
+
+## 4. Metodologia Badań (Workflow)
+
+1. **Rozdzielność uruchamiania:** Nie robimy przycisku "Run All". Każdy model (notatnik) jest niezależny.
+2. **Wspólna miara:** Każdy model importuje tę samą funkcję oceniającą z folderu `src/`, co gwarantuje uczciwe porównanie (wielokryterialna ocena).
+3. **Podział zbioru:**
+    - **Uwaga:** Unikamy podejścia "100 rekordów trening / 100k test" (chyba że jako eksperyment negatywny).
+    - **Rekomendacja:** Klasyczny podział 80% (trening) / 20% (test) na pełnym zbiorze danych.
+
+---
+
+## 5. Układ Pracy Dyplomowej (Tekst)
+
+Podział kodu idealnie mapuje się na rozdziały pracy:
+
+- **Rozdział: Przetwarzanie i Inżynieria Danych**
+    - Opisujesz SQL, strukturę bazy, proces ETL.
+    - Pokazujesz kod integracji z systemem działalności gospodarczej.
+- **Rozdział: Badania i Analiza Modeli**
+    - Opisujesz eksperymenty ML.
+    - Opisujesz środowisko sprzętowe (RTX 4090) i jego wpływ na obliczenia.
+    - Prezentujesz wyniki porównawcze.
+
+---
+
+### ✅ Next Steps (Do zrobienia):
+
+1. Zainstalować VS Code i niezbędne wtyczki (Python, Jupyter).
+2. **Sprawdzić/Zainstalować sterowniki CUDA**, aby RTX 4090 "widział" Pythona.
+3. Utworzyć strukturę folderów.

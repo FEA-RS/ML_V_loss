@@ -1,0 +1,18 @@
+{
+    "TEST_ID": "v8",
+    "TIME_STEPS": 2,
+    "LSTM_UNITS": 32,
+    "NUM_LAYERS": 2,
+    "DROPOUT_RATE": 0.2,
+    "LEARNING_RATE": 0.0005,
+    "WEIGHT_DECAY": 0.0001,
+    "EPOCHS": 200,
+    "BATCH_SIZE": 8,
+    "PATIENCE": 20,
+    "METRICS": {
+        "Train_R2": 0.8123,
+        "Test_R2": 0.2043,
+        "Train_MAE": 0.0226,
+        "Test_MAE": 0.0208
+    }
+}

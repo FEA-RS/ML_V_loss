@@ -1,0 +1,11 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python.defaultInterpreterPath": "c:\\ProgramData\\miniconda3",
+    "terminal.integrated.env.windows": {
+        "OMP_NUM_THREADS": "32",
+        "OMP_THREAD_LIMIT": "32",
+        "OPENBLAS_NUM_THREADS": "32",
+        "MKL_NUM_THREADS": "32"
+    }
+}

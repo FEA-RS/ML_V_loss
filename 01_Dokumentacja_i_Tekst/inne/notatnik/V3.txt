@@ -1,0 +1,122 @@
+# **Temat:** Wielokryterialna analiza porównawcza architektur uczenia maszynowego w zadaniu prognozowania deformacji terenu wywołanych pracą maszyny drążącej TBM
+
+## **1. Środowisko Pracy (IDE i Hardware)**
+
+- **Wybór IDE: Visual Studio Code (VS Code)**:
+- **Standard rynkowy**: Najlepsze przygotowanie do pracy zawodowej.
+- **Hybrydowość**: Idealna obsługa notatników .ipynb do eksperymentów oraz skryptów .py do wdrażania.
+- **Wydajność**: Stabilniejszy niż Spyder; nie zawiesza interfejsu przy dużym obciążeniu danymi.
+- **Darmowość**: Brak konieczności posiadania licencji studenckich/firmowych.
+- **Sprzęt: NVIDIA RTX 4090**:
+- **Status**: Obliczenia lokalne na potężnej karcie graficznej zamiast korzystania z chmury.
+- **Wymóg techniczny**: Instalacja **CUDA Toolkit** oraz odpowiednich wersji **PyTorch/TensorFlow (GPU)**, aby modele były liczone przez rdzenie Tensor karty, a nie procesor.
+
+## **2. Strategia Zarządzania Danymi (Data Pipeline)**
+
+Zastosowanie profesjonalnego podziału na warstwę inżynierii danych i uczenia maszynowego.
+
+- **Etap A: Przygotowanie Danych (Data Engineering)**:
+- **Źródło**: Relacyjna baza danych (PostgreSQL/TimescaleDB) integrująca telemetrię TBM (100k+ rekordów), InSAR oraz czujniki lądowe.
+- **Akcja**: Jednorazowy skrypt pobierający i synchronizujący dane (ETL).
+- **Format zapisu**: Plik **.parquet** (zamiast CSV) – zajmuje mniej miejsca, zachowuje typy danych i wczytuje się błyskawicznie.
+- **Cel dyplomowy**: Wykazanie umiejętności projektowania systemów SQL i procesów ETL14.
+- **Etap B: Trenowanie Modeli (Machine Learning)**:
+- **Źródło**: Lokalny plik .parquet.
+- **Zaleta**: Maksymalna szybkość iteracji i gwarancja powtarzalności wyników na zamrożonym zbiorze.
+
+## **3. Core Badawczy – Rodziny Modeli do Benchmarku**
+
+Badanie obejmie cztery klasy algorytmów, co uzasadnia "wielokryterialność" analizy.
+
+- **Klasa 1: Baseline (Punkty odniesienia)**:
+- Metody naiwne oraz klasyczna statystyka (np. ARIMA) dla sprawdzenia, o ile AI poprawia wynik.
+- **Klasa 2: Machine Learning (Drzewiaste)**:
+- **Modele**: **XGBoost, LightGBM, CatBoost**.
+- **Zastosowanie**: Identyfikacja kluczowych parametrów maszyny (np. ciśnienie przodka) wpływających na osiadanie (Feature Importance).
+- **Klasa 3: Deep Learning (Sekwencyjne - RNN)**:
+- **Modele**: **LSTM, GRU, Bi-LSTM**.
+- **Zastosowanie**: Uchwycenie dynamiki i opóźnień (bezwładność górotworu).
+- **Klasa 4: State-of-the-Art (Opcja na ocenę 5.0)**:
+- **Modele**: **Temporal Fusion Transformer (TFT)** lub **TCN** (Temporal Convolutional Networks).
+- **Zastosowanie**: Wykorzystanie mechanizmów atencji (Attention) do predykcji długoterminowych deformacji.
+
+## **4. Metodologia Wielokryterialnej Oceny (Inżynieria ML)**
+
+Modele będą oceniane pod kątem trzech filarów informatyki w inżynierii mechanicznej:
+
+1. **Jakość predykcji (Skuteczność)**: Błędy $RMSE, MAE$ oraz współczynnik determinacji $R^2$.
+2. **Koszt obliczeniowy (Wydajność)**: Czas treningu (minuty/godziny) oraz czas inferencji (milisekundy potrzebne na odpowiedź modelu).
+3. **Zasoby i Stabilność (Inżynieria)**: Zużycie pamięci RAM/VRAM na karcie RTX 4090 oraz powtarzalność wyników przy 10-krotnym uruchomieniu procesu uczenia.
+
+**Workflow badawczy**:
+
+- **Automatyczny Tuning**: Wykorzystanie biblioteki **Optuna** do przeprowadzenia setek prób doboru hiperparametrów dla każdego modelu.
+- **Walidacja**: Zastosowanie *Walk-forward validation*, aby nie złamać chronologii szeregów czasowych.
+
+## **5. Struktura Projektu (Drzewo plików)**
+
+Utrzymujemy jeden spójny system ze wspólnym "silnikiem" oceny.
+
+Plaintext
+
+Magisterka_ML/
+
+│
+
+├── data/
+
+│   ├── raw/               # Zrzut z SQL (plik .parquet) [cite: 123]
+
+│   └── processed/         # Dane po normalizacji i feature engineering [cite: 124]
+
+│
+
+├── scripts/               # Skrypty jednorazowe (ETL) [cite: 126]
+
+│   └── 01_sql_to_parquet.py [cite: 127]
+
+│
+
+├── src/                   # Silnik badawczy (zapewnia obiektywizm porównania) [cite: 129]
+
+│   ├── __init__.py
+
+│   ├── evaluation.py      # Funkcja licząca błędy, czasy i zużycie VRAM [cite: 131]
+
+│   └── visualization.py   # Skrypty do identycznych wykresów dla każdego modelu [cite: 132]
+
+│
+
+├── notebooks/             # Eksperymenty (1 rodzina modeli = 1 plik) [cite: 134]
+
+│   ├── 01_Baselines.ipynb
+
+│   ├── 02_TreeModels.ipynb
+
+│   ├── 03_RNN_LSTM.ipynb
+
+│   └── 99_Comparison_Report.ipynb # Końcowa analiza wielokryterialna [cite: 138]
+
+│
+
+└── results/
+
+├── models/            # Zapisane wagi i stany modeli (.pth, .pkl) [cite: 141]
+
+└── metrics.csv        # Zbiorcza tabela wszystkich wyników do pracy [cite: 142]
+
+## **6. Uzasadnienie "Obronne" dla WIMiR**
+
+Ten plan gwarantuje, że praca spełnia wymogi kierunku **Mechanika i Budowa Maszyn** oraz specjalizacji **Informatyka**:
+
+- **Aspekt mechaniczny**: Modelowanie fizycznej interakcji "maszyna-górotwór".
+- **Aspekt informatyczny**: Projektowanie architektury systemu, bazy danych SQL oraz wielkoskalowy benchmark AI na GPU.
+- **Aspekt inżynierski**: Ocena modeli pod kątem wydajności czasu rzeczywistego i stabilności obliczeń.
+
+---
+
+**Opis:** 
+
+Dynamiczny rozwój wielkoskalowych inwestycji tunelowych w Polsce, realizowanych przy użyciu maszyn TBM, generuje zapotrzebowanie na zaawansowane systemy prognozowania ich wpływu na otoczenie. W pracy podjęto problem opracowania cyfrowej reprezentacji procesów deformacji terenu z wykorzystaniem wielokryterialnej analizy porównawczej architektur uczenia maszynowego. W ramach pracy zaprojektowano strukturę bazy danych SQL umożliwiającą integrację zróżnicowanych strumieni danych telemetrycznych i pomiarowych, na bazie których wykonano główną część badawczą.
+
+Głównym elementem badań jest przeprowadzenie benchmarku reprezentatywnych modeli uczenia maszynowego wywodzących się z różnych architektur — od algorytmów drzewiastych po zaawansowane sieci głębokie. Celem jest identyfikacja konkretnego rozwiązania, które najskuteczniej modeluje nieliniową zależność między parametrami pracy maszyny a odpowiedzią środowiska. Proces ewaluacji oparto na podejściu wielokryterialnym, uwzględniającym zarówno błędy predykcji, jak i kluczowe parametry techniczne, takie jak czas odpowiedzi modelu oraz obciążenie zasobów obliczeniowych akceleratora GPU bądź CPU.

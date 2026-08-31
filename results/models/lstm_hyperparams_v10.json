@@ -1,0 +1,20 @@
+{
+    "TEST_ID": "v10",
+    "TIME_STEPS": 2,
+    "LSTM_UNITS": 32,
+    "NUM_LAYERS": 2,
+    "DROPOUT_RATE": 0.2,
+    "LEARNING_RATE": 0.0005,
+    "WEIGHT_DECAY": 0.0001,
+    "EPOCHS": 400,
+    "BATCH_SIZE": 8,
+    "PATIENCE": 20,
+    "METRICS": {
+        "Train_R2": 0.8317,
+        "Test_R2": 0.2642,
+        "Train_MAE": 0.0214,
+        "Test_MAE": 0.0183,
+        "Train_RMAE_pct": 26.32,
+        "Test_RMAE_pct": 70.35
+    }
+}
